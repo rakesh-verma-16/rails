@@ -1,0 +1,18 @@
+.row
+  .col-sm-12
+    %h2 Articles
+.well.whiteBack
+  .row
+    .col-sm-6
+      = link_to 'New Article', new_article_path, {class:'btn btn-primary'}
+  %table.table.table-bordered.table-striped.margin10-both.table-hover.showRow
+    %thead
+      %th Title
+      %th Content
+      %th Author
+    %tbody.pointerCursor
+      - @articles.each do |notification|
+        %tr{'data-link'=>article_path(notification)}
+          %td= notification.title
+          %td= notification.content
+          %td= notification.author

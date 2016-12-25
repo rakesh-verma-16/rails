@@ -1,0 +1,17 @@
+.row
+  .col-sm-12
+    %h2 Articles
+.well.whiteBack
+  .row
+    %table.table.table-bordered.table-striped.margin10-both.table-hover.showRow
+      %thead
+        %th Title
+        %th Content
+        %th Author
+      %tbody.pointerCursor
+        %td= @article.first.title
+        %td= @article.first.content
+        %td= @article.first.author
+  .row
+    .col-md-12.text-center
+      = link_to 'All notifications', article_index_path , class:'btn btn-danger'
