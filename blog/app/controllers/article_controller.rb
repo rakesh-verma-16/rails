@@ -1,6 +1,6 @@
 class ArticleController < ApplicationController
 
-  after_commit validate_params, only: [:create]
+  before_action :validate_params, only: [:create]
 
   def create
     create_params = created_params
