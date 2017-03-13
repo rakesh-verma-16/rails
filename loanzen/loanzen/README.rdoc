@@ -3,3 +3,55 @@
 This is a mini search engine just like elastic search which uses inverted Index to store and retrieve data in O(1) time.
 The results returned uses Term frequency to sort the results.
 
+== API Call: 
+
+1.) To Index/Create: [POST] http://localhost:9001/movies?content=Any content that you want to put in here for indexing         
+2.) To Search [GET] http://localhost:9001/movies/search?queries=any,content,you,want,to,search&all=true
+
+== API Call Explaination: 
+
+First call is a Post call which takes a content parameter and filters the content out of it for storing and searching purposes. I have personally used Postman to Hit the API. 
+It would return "OK" if file is saved else "Error".
+
+Second call is a GET call which takes two parameters.                                                                         
+a.) queries = Comman seperated words to search for.                                                                            
+b.) all = a boolean which can be passed to search for the documents which contains all the words in query. 
+
+For example: the API - http://localhost:9001/movies/search?queries=whole,world&all=true would return only those documents which has both the words "whole" as well as "true"
+However, the API - http://localhost:9001/movies/search?queries=whole,world shall return all the documents which contains either of the words or even both.
+
+This search engine is in very early stage and has a lot of bugs and features to be built on top of it. 
+
+The best thing about this search engine is it searches the whole document in O(1) time.
+
+== How to install/Run: 
+
+Ruby - 2.3, Rails 4.4 should be installed.
+
+1.) Clone the repo in local
+2.) Run "rake db:migrate"
+3.) start rails server in terminal using "rails s -p 9001"
+4.) Hit the API for indexing.
+5.) Hit the API for searching.
+
+If you are a naughty person and decides to jump on step 5 rather than 4, you'd get... ehhhh, just try it if you wish. :)
+
+== Things yet to do
+
+1.) Code can be moved to module or helper files to make the controller clean as it should be.
+2.) Some of the variables used are not really used for much part and hence can be removed after use to free memory.
+3.) Originally, I wanted to add a search on title and content but due to some time constraints, I haven't added the title part which can be added later.
+4.) Every indexing uses a new file which takes lot of space. We can come up with a better solution of using a single file with some string as EOF.
+5.) No updations allowed.
+6.) Search file is re-written after every indexing. We can do something to make sure only the relevant part is updated in file rather than complete IO operations. Would save in memory time.
+7.) Please feel free to add any if you think or report a bug, even better if you could fix any exiting ones.
+
+== How it works.
+
+First the index call creates a new files and saves the content as it is in the file so it could be retrieved later just as original.
+After saving, it breaks down the content word by word and creates a hash of hashes which contains the word itself as primary key and the document in which the original content is stored as secondary key of nested hash and the term frequency as value.
+Something like {"Hey": {"document_1" : 5}, {"document_7": 2}} , it states that document 1 contains "Hey" word 5 times in it and document 7 contains the same word two times.
+
+When we are done with this hash creation step, we update the search.json file with this new hash deep merging. We append the existing words pointers and creates new pointers for new words.
+
+Similarly, when we have to search, we read the json file and search for the word in the hash. If we have to search for multiple words, we create a new hash which stores the document number and the term frequency of each word individually and hence returns the appropriate results accordingly.
