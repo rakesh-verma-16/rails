@@ -12,6 +12,7 @@ class MoviesController < ApplicationController
     else
       render json: { status: "unprocessable_entity" }, status: :unprocessable_entity
     end
+    binding.pry
     @@total_count += 1
   end
 
