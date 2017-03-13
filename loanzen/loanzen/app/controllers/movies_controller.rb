@@ -3,7 +3,6 @@ class MoviesController < ApplicationController
   @@total_count = 1
 
   def create
-    # binding.pry
     Dir.mkdir("mini-search") unless File.exists?("mini-search")
     aFile = File.open("mini-search/index_file_#{@@total_count}.txt", "w")
     if aFile
@@ -17,24 +16,22 @@ class MoviesController < ApplicationController
   end
 
   def inverted_index(content)
-    # binding.pry
-    ii = filtered_content(content)
-    h = make_hash(ii)
+    ii_array = filtered_content(content)
+    # hash of {word: no_of_times_word_appears}
+    h = make_hash(ii_array)
     # storing term frequency in hash as well.
+    # h = {word: {document_number_score}: term_frequency}
     h.each { |k,v| h[k] = {"#{@@total_count}_score": v} }
     append_in_existing(h)
   end
 
   def filtered_content(content)
-    # binding.pry
-
-    word_array = content.split()
+    content = content.gsub(/[\s.?<>:;,]/ ," ")
+    word_array = content.downcase.split()
     word_array = word_array - Movie::FILTERING_LIST
   end
 
   def make_hash( array )
-    # binding.pry
-
     hash = Hash.new(0)
     array.each{|key| hash[key] += 1}
     hash
@@ -44,30 +41,36 @@ class MoviesController < ApplicationController
     data = {}
     data = data_in_search_file
     # Merge into existing hash appropriately.
-    update_search_data(data,h)
-    write_to_json data
-  end
-
-  def update_search_data(data,h)
-    h.each do |k,v|
-      if data[k].blank?
-        data[k] = v
-      else
-        data[k].merge!(v)
-      end
-    end
-  end
-
-  def write_to_json data
-    aFile = File.open("mini-search/search.json", "w")
-    aFile.syswrite(data.to_json)
+    data = update_search_data(data,h)
+    update_search_file data
   end
 
   def data_in_search_file
+    # binding.pry
     return nil unless File.exists?("mini-search/search.json")
-    File.open("mini-search/search.json") do |f|
+    File.open("mini-search/search.json", "w+") do |f|
       data = JSON.parse(f.read) unless File.zero?("mini-search/search.json")
     end
+  end
+
+  def update_search_data(data,h)
+    if data.blank?
+      data = h
+    else
+      h.each do |k,v|
+        if data[k].blank?
+          data[k] = v
+        else
+          data[k].merge!(v)
+        end
+      end
+    end
+    data
+  end
+
+  def update_search_file content
+    aFile = File.open("mini-search/search.json", "w")
+    aFile.syswrite(content.to_json) if content.present?
   end
 
   def search
@@ -75,7 +78,6 @@ class MoviesController < ApplicationController
     a, doc = [], []
     flag = true
     data = data_in_search_file
-    binding.pry
     render json: {status: "No file has been indexed yet or the search.json file is missing. Please check the permissions."} and return if data.blank?
     queries = params[:queries].split(',')
     queries.each do |query|
