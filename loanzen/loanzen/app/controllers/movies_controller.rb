@@ -46,9 +46,8 @@ class MoviesController < ApplicationController
   end
 
   def data_in_search_file
-    # binding.pry
     return nil unless File.exists?("mini-search/search.json")
-    File.open("mini-search/search.json", "w+") do |f|
+    File.open("mini-search/search.json") do |f|
       data = JSON.parse(f.read) unless File.zero?("mini-search/search.json")
     end
   end
@@ -81,6 +80,7 @@ class MoviesController < ApplicationController
     render json: {status: "No file has been indexed yet or the search.json file is missing. Please check the permissions."} and return if data.blank?
     queries = params[:queries].split(',')
     queries.each do |query|
+      next if data[query].blank?
       if flag
         flag = false
         a.push(data[query].keys).flatten
@@ -96,6 +96,10 @@ class MoviesController < ApplicationController
       aFile = File.read("mini-search/index_file_#{i}.txt")
       final.merge!({"article_#{i}": aFile})
     end
-    render json: final
+    if final.blank?
+      render json: {Error: "No Data with the matching query found. Please try again with other results."}
+    else
+      render json: final
+    end
   end
 end
