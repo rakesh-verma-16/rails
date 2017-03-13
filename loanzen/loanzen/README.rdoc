@@ -5,7 +5,7 @@ The results returned uses Term frequency to sort the results.
 
 == API Call: 
 
-1.) To Index/Create: [POST] http://localhost:9001/movies?content=Any content that you want to put in here for indexing
+1.) To Index/Create: [POST] http://localhost:9001/movies?content=Any content that you want to put in here for indexing         
 2.) To Search [GET] http://localhost:9001/movies/search?queries=any,content,you,want,to,search&all=true
 
 == API Call Explaination: 
@@ -13,8 +13,8 @@ The results returned uses Term frequency to sort the results.
 First call is a Post call which takes a content parameter and filters the content out of it for storing and searching purposes. I have personally used Postman to Hit the API. 
 It would return "OK" if file is saved else "Error".
 
-Second call is a GET call which takes two parameters.
-a.) queries = Comman seperated words to search for.
+Second call is a GET call which takes two parameters.                                                                         
+a.) queries = Comman seperated words to search for.                                                                            
 b.) all = a boolean which can be passed to search for the documents which contains all the words in query. 
 
 For example: the API - http://localhost:9001/movies/search?queries=whole,world&all=true would return only those documents which has both the words "whole" as well as "true"
