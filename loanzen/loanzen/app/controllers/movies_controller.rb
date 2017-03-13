@@ -12,7 +12,6 @@ class MoviesController < ApplicationController
     else
       render json: { status: "unprocessable_entity" }, status: :unprocessable_entity
     end
-    binding.pry
     @@total_count += 1
   end
 
@@ -78,7 +77,7 @@ class MoviesController < ApplicationController
     a, doc = [], []
     flag = true
     data = data_in_search_file
-    render json: {status: "No file has been indexed yet or the search.json file is missing. Please check the permissions."} and return if data.blank?
+    render json: {Error: "No file has been indexed yet or the search.json file is missing. Please check the permissions."} and return if data.blank?
     queries = params[:queries].split(',')
     queries.each do |query|
       next if data[query].blank?
